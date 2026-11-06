@@ -33,7 +33,7 @@
   "devDependencies": {
     "concurrently": "^9.0.0"
   },
-  "packageManager": "pnpm@10.34.9",
+  "packageManager": "pnpm@12.18.0",
   "engines": {
     "node": ">=22",
     "pnpm": ">=10.0.0"
