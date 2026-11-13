@@ -95,8 +95,10 @@ class Assistant(Agent):
         )
         self._room = room
         self._user_id = user_id
+        # MossClient requires str credentials; default to "" so a missing env
+        # var surfaces as a logged load failure instead of a crash.
         self._moss = MossClient(
-            os.getenv("MOSS_PROJECT_ID"), os.getenv("MOSS_PROJECT_KEY")
+            os.getenv("MOSS_PROJECT_ID", ""), os.getenv("MOSS_PROJECT_KEY", "")
         )
         self._indexes_loaded = False
 
@@ -171,9 +173,7 @@ class Assistant(Agent):
         Args:
             query: The user's question or topic to look up.
         """
-        result = await self._moss.query(
-            KNOWLEDGE_INDEX, query, QueryOptions(top_k=3)
-        )
+        result = await self._moss.query(KNOWLEDGE_INDEX, query, QueryOptions(top_k=3))
         await self._publish_moss_context(query, result)
 
         docs = getattr(result, "docs", None) or []

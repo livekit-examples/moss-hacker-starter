@@ -60,7 +60,9 @@ def _load_knowledge_documents() -> list[DocumentInfo]:
             metadata = {}
         # Moss metadata values must be strings.
         metadata = {str(k): str(v) for k, v in metadata.items()}
-        documents.append(DocumentInfo(id=str(doc_id), text=str(text), metadata=metadata))
+        documents.append(
+            DocumentInfo(id=str(doc_id), text=str(text), metadata=metadata)
+        )
 
     if not documents:
         raise ValueError("No valid documents were loaded from knowledge.json.")
@@ -117,7 +119,9 @@ async def build_indexes() -> None:
         f"Creating Moss knowledge index '{knowledge_index}' with "
         f"{len(knowledge_docs)} docs using model '{model_id}'..."
     )
-    knowledge_result = await client.create_index(knowledge_index, knowledge_docs, model_id)
+    knowledge_result = await client.create_index(
+        knowledge_index, knowledge_docs, model_id
+    )
     print(
         f"  done (job: {knowledge_result.job_id}, index: {knowledge_result.index_name}, "
         f"docs: {knowledge_result.doc_count})"

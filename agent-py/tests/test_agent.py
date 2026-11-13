@@ -1,9 +1,20 @@
+import os
 import textwrap
 
 import pytest
 from livekit.agents import AgentSession, inference, llm, mock_tools
 
 from agent import Assistant
+
+# These evals call LiveKit Inference, so they need LiveKit credentials. Skip
+# (rather than fail) when they're absent, e.g. in CI on forks.
+pytestmark = pytest.mark.skipif(
+    not all(
+        os.getenv(name)
+        for name in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET")
+    ),
+    reason="LiveKit credentials not set",
+)
 
 
 def _judge_llm() -> llm.LLM:

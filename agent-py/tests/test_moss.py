@@ -7,6 +7,7 @@ live, credentialed behavior is validated in the live-test task.
 """
 
 import json
+import os
 
 import pytest
 
@@ -75,8 +76,16 @@ class _FakeRoom:
 
 @pytest.fixture
 def stub_moss(monkeypatch):
-    """Replace the agent's `MossClient` with the recording fake."""
+    """Replace the agent's `MossClient` with the recording fake.
+
+    `Assistant` builds a LiveKit Inference LLM, which only needs credentials
+    to be present (no network call happens here), so placeholder values are
+    set when real ones are absent.
+    """
     monkeypatch.setattr(agent_module, "MossClient", _FakeMossClient)
+    for name in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"):
+        if not os.getenv(name):
+            monkeypatch.setenv(name, "placeholder")
 
 
 async def test_search_knowledge_returns_joined_text_and_publishes_context(

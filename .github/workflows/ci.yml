@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm format:check
+      - run: pnpm build
+
+  agent-py:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-py
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read Python version from the Dockerfile
+        id: python
+        run: echo "version=$(sed -n 's/^ARG PYTHON_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
+      - uses: astral-sh/setup-uv@v10.3.3
+        with:
+          python-version: ${{ steps.python.outputs.version }}
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      # Key-dependent evals in tests/test_agent.py skip when LiveKit credentials are absent.
+      - run: uv run pytest -v
+      - name: Agent CLI starts
+        run: uv run src/agent.py --help
+
+  agent-py-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build agent image
+        run: docker build -t agent-py ./agent-py
+      - name: Smoke test inside the image
+        run: |
+          docker run --rm agent-py uv run python -c "import moss, moss_core, livekit.agents; print('moss', moss.__version__ if hasattr(moss, '__version__') else 'ok', 'livekit-agents', livekit.agents.__version__)"
+          docker run --rm agent-py uv run src/agent.py --help
