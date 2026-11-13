@@ -1,0 +1,6 @@
+# pnpm 11+ fails installs on unreviewed dependency build scripts (strictDepBuilds).
+# These packages ship prebuilt binaries, so their install scripts are not needed.
+allowBuilds:
+  '@tailwindcss/oxide': false
+  sharp: false
+  unrs-resolver: false
