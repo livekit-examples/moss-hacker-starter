@@ -1,8 +1,13 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { AccessToken, type AccessTokenOptions, type VideoGrant } from 'livekit-server-sdk';
+import {
+  AccessToken,
+  type AccessTokenOptions,
+  RoomAgentDispatch,
+  RoomConfiguration,
+  type VideoGrant,
+} from 'livekit-server-sdk';
 import { randomUUID } from 'node:crypto';
-import { RoomAgentDispatch, RoomConfiguration } from '@livekit/protocol';
 
 type ConnectionDetails = {
   serverUrl: string;
