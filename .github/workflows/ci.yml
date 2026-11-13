@@ -52,8 +52,17 @@ jobs:
       - run: uv run ruff format --check .
       # Key-dependent evals in tests/test_agent.py skip when LiveKit credentials are absent.
       - run: uv run pytest -v
-      - name: Agent CLI starts
-        run: uv run src/agent.py --help
+      # `python -m livekit.agents start` is what `lk agent start` and the Docker
+      # image run; start the worker against an unreachable server to check the
+      # agent loads, with no deprecation warnings.
+      - name: Smoke test worker start
+        env:
+          PYTHONWARNINGS: default
+        run: |
+          timeout 15 uv run -m livekit.agents start src/agent.py --url ws://127.0.0.1:9 --api-key ci --api-secret ci-secret-ci-secret-ci-secret-ci > start.log 2>&1 || true
+          tail -n 20 start.log
+          grep -q "starting worker" start.log
+          ! grep -qi "deprecat" start.log
 
   agent-py-docker:
     runs-on: ubuntu-latest
@@ -64,4 +73,7 @@ jobs:
       - name: Smoke test inside the image
         run: |
           docker run --rm agent-py uv run python -c "import moss, moss_core, livekit.agents; print('moss', moss.__version__ if hasattr(moss, '__version__') else 'ok', 'livekit-agents', livekit.agents.__version__)"
-          docker run --rm agent-py uv run src/agent.py --help
+          docker run --rm -e PYTHONWARNINGS=default agent-py timeout 15 uv run -m livekit.agents start src/agent.py --url ws://127.0.0.1:9 --api-key ci --api-secret ci-secret-ci-secret-ci-secret-ci > start.log 2>&1 || true
+          tail -n 20 start.log
+          grep -q "starting worker" start.log
+          ! grep -qi "deprecat" start.log

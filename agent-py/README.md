@@ -101,19 +101,21 @@ uv run -m livekit.agents download-files
 Next, run this command to speak to your agent directly in your terminal:
 
 ```console
-uv run python src/agent.py console
+lk agent console
 ```
 
-To run the agent for use with a frontend or telephony, use the `dev` command:
+To run the agent for use with a frontend or telephony, use `lk agent dev`. It registers the agent under a [deployment](https://docs.livekit.io/deploy/agents/deployments/) (a random `dev-…` name unless you pass one); the frontend in `../frontend` dispatches to `local-dev` by default (`AGENT_DEPLOYMENT`), so pass that name (as `pnpm dev` in the repo root does):
 
 ```console
-uv run python src/agent.py dev
+lk agent dev --deployment local-dev
 ```
 
-In production, use the `start` command:
+These commands need the [LiveKit CLI](https://docs.livekit.io/reference/developer-tools/livekit-cli/) 2.19 or later. Running `src/agent.py dev` / `console` directly is deprecated.
+
+In production, start the agent with the SDK's own entry point (what `lk agent start` and the Dockerfile run):
 
 ```console
-uv run python src/agent.py start
+uv run -m livekit.agents start src/agent.py
 ```
 
 ## Frontend & Telephony

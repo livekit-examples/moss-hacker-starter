@@ -88,5 +88,7 @@ USER appuser
 
 # Run the AgentServer using UV
 # UV will activate the virtual environment and run the agent.
+# `python -m livekit.agents start <entrypoint>` is the SDK's own entry (what `lk agent start`
+# runs); running `src/agent.py start` goes through the deprecated built-in Python CLI.
 # The "start" command tells the AgentServer to connect to LiveKit and begin waiting for jobs.
-CMD ["uv", "run", "src/agent.py", "start"]
+CMD ["uv", "run", "-m", "livekit.agents", "start", "src/agent.py"]

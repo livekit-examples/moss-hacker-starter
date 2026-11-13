@@ -22,6 +22,12 @@ const API_SECRET = process.env.LIVEKIT_API_SECRET;
 const LIVEKIT_URL = process.env.LIVEKIT_URL;
 // Agent dispatch name — must match the agent's registered name (`agent-py`). See `.env.local`.
 const AGENT_NAME = process.env.AGENT_NAME;
+// Deployment the dispatched agent is registered under. `pnpm dev` runs the agent with
+// `lk agent dev --deployment local-dev`, so that's the default. Set AGENT_DEPLOYMENT=
+// (empty) to dispatch to the production deployment instead, e.g. an agent started with
+// `pnpm agent:py:start`, from the Docker image, or on LiveKit Cloud.
+// See https://docs.livekit.io/agents/server/agent-dispatch/#deployments
+const AGENT_DEPLOYMENT = process.env.AGENT_DEPLOYMENT ?? 'local-dev';
 
 // httpOnly cookie that persists a stable per-user id across visits. Stamped into the agent
 // dispatch metadata as `{ "user_id": <uuid> }` so the agent can scope its Moss memory per user.
@@ -65,7 +71,7 @@ export async function POST(req: Request) {
 
     // Stamp `{ "user_id": <uuid> }` as the agent dispatch metadata. The agent reads this via
     // `ctx.job.metadata`. Ensure an agent dispatch entry exists (using AGENT_NAME for explicit
-    // dispatch) and preserve any agent name already supplied by the client.
+    // dispatch) and preserve any agent name or deployment already supplied by the client.
     if (roomConfig.agents.length === 0) {
       roomConfig.agents.push(new RoomAgentDispatch({ agentName: AGENT_NAME ?? '' }));
     }
@@ -73,6 +79,9 @@ export async function POST(req: Request) {
     for (const agent of roomConfig.agents) {
       if (!agent.agentName && AGENT_NAME) {
         agent.agentName = AGENT_NAME;
+      }
+      if (!agent.deployment) {
+        agent.deployment = AGENT_DEPLOYMENT;
       }
       agent.metadata = dispatchMetadata;
     }

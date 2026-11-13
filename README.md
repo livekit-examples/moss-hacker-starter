@@ -70,7 +70,7 @@ moss-hacker-starter/
 │   ├── src/agent.py           #   agent + 3 Moss tools, registered as "agent-py"
 │   ├── src/create_index.py    #   builds the knowledge + memory indexes
 │   ├── knowledge.json         #   RAG seed corpus (~13 LiveKit Q&A entries)
-│   ├── Dockerfile             #   deploy image (CMD: uv run src/agent.py start)
+│   ├── Dockerfile             #   deploy image (CMD: uv run -m livekit.agents start src/agent.py)
 │   └── .env.local             #   LIVEKIT_* (auto) + MOSS_* (you paste)
 ├── frontend/                  # Next.js app (pnpm-managed)
 │   ├── app/api/token/route.ts #   token + dispatch metadata + lk_moss_user cookie
@@ -85,8 +85,8 @@ moss-hacker-starter/
 
 - **Python 3.10+** and **[uv](https://docs.astral.sh/uv/)** (manages the agent's venv).
 - **Node.js 22+** and **[pnpm](https://pnpm.io) 10+**.
-- The **[LiveKit CLI](https://docs.livekit.io/reference/developer-tools/livekit-cli/)** (`lk`),
-  authenticated to a LiveKit Cloud project:
+- The **[LiveKit CLI](https://docs.livekit.io/reference/developer-tools/livekit-cli/)** (`lk`) 2.19 or later
+  (it runs the agent in dev and console mode), authenticated to a LiveKit Cloud project:
   ```bash
   lk cloud auth          # opens a browser to link your project
   lk project list        # verify a linked project exists
@@ -166,6 +166,14 @@ pnpm dev
 
 - Frontend: **http://localhost:3000** — click **Start call**, allow the mic, and talk.
 - The agent connects to LiveKit Cloud and waits for the browser to dispatch it.
+
+`pnpm dev` runs the agent with `lk agent dev --deployment local-dev`. `lk agent dev` registers the
+agent under a [deployment](https://docs.livekit.io/deploy/agents/deployments/) so a local worker
+never takes production jobs; left to itself it picks a random `dev-…` name, which a token minted by
+the frontend couldn't target. The frontend token route puts the same name on its agent dispatch
+(`AGENT_DEPLOYMENT` in `frontend/.env.local`, default `local-dev`). If you run the agent as
+production instead (`pnpm agent:py:start`, the Docker image, or LiveKit Cloud), set
+`AGENT_DEPLOYMENT=` (empty).
 
 No-frontend smoke test (talk to the agent in your terminal):
 
@@ -247,7 +255,7 @@ See [Agent deployment](https://docs.livekit.io/deploy/agents/quickstart/) and
 | `pnpm setup` | install frontend + sync agent (`uv`) + copy `.env.local` files |
 | `pnpm moss:index` | build the `knowledge` + `memory` Moss indexes |
 | `pnpm dev` | run agent + frontend together (via `concurrently`) |
-| `pnpm agent:py:console` | terminal smoke test (no frontend) |
+| `pnpm agent:py:console` | terminal smoke test (no frontend, `lk agent console`) |
 | `pnpm agent:py:start` / `pnpm agent:py:download-files` | prod entry / fetch plugin model files |
 | `pnpm build` / `pnpm start:frontend` | build / serve the frontend |
 | `pnpm test` / `pnpm lint` / `pnpm format` | tests, lint, format |
