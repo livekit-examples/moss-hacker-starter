@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "agent-starter-python"
 version = "1.0.0"
 description = "Simple voice AI assistant built with LiveKit Agents for Python"
-requires-python = ">=3.15, <3.16"
+requires-python = ">=3.11, <3.15"
 
 dependencies = [
     "livekit-agents[silero,turn-detector]==1.8.11",
@@ -23,9 +23,10 @@ dev = [
 ]
 
 [tool.uv]
-# yarl 1.24.1 was published with only a cp310 wheel and no sdist, so it can't
-# install on Python 3.11+. Remove this once upstream uploads the remaining wheels.
-constraint-dependencies = ["yarl<1.24"]
+# yarl 1.24.x was published with only cp310 wheels and no sdist, so it can't
+# install on Python 3.11+. Skip it; 1.25.1+ has wheels for all versions (and
+# livekit-api's aiohttp needs yarl>=1.25.1).
+constraint-dependencies = ["yarl!=1.24.*"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
