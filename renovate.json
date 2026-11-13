@@ -3,11 +3,17 @@
   "extends": [
     "local>livekit-examples/renovate-config"
   ],
+  "minimumReleaseAge": "1 day",
   "packageRules": [
     {
       "description": "Hold Python below 3.15 until livekit-agents dependencies (e.g. livekit-blingfire) ship 3.15 wheels",
       "matchDepNames": ["python"],
       "allowedVersions": "<3.15"
+    },
+    {
+      "description": "Hold TypeScript below 7 until typescript-eslint supports TS 7 (latest 8.x supports <6.1)",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
     }
   ]
 }

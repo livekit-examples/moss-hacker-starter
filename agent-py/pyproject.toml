@@ -12,7 +12,9 @@ dependencies = [
     "livekit-agents[silero,turn-detector]==1.8.11",
     "livekit-plugins-ai-coustics~=0.2",
     "python-dotenv",
-    "moss>=1.4",
+    # moss>=1.17 (inferedge-moss-core>=0.31) ships manylinux_2_28 wheels; older
+    # releases need glibc 2.38+ and fail on Debian 12 / Ubuntu 22.04.
+    "moss>=1.24",
 ]
 
 [dependency-groups]
