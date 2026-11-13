@@ -12,15 +12,14 @@ from livekit.agents import (
     AgentServer,
     AgentSession,
     JobContext,
-    JobProcess,
     RunContext,
+    TurnHandlingOptions,
     cli,
     function_tool,
     inference,
     room_io,
 )
-from livekit.plugins import ai_coustics, silero
-from livekit.plugins.turn_detector.multilingual import MultilingualModel
+from livekit.plugins import ai_coustics
 from moss import DocumentInfo, MossClient, QueryOptions
 
 logger = logging.getLogger("agent")
@@ -242,13 +241,6 @@ class Assistant(Agent):
 server = AgentServer()
 
 
-def prewarm(proc: JobProcess):
-    proc.userdata["vad"] = silero.VAD.load()
-
-
-server.setup_fnc = prewarm
-
-
 # Keep the registered dispatch name as "agent-py": the frontend (Task 6) sets
 # AGENT_NAME=agent-py to dispatch explicitly to this worker. Do not rename.
 @server.rtc_session(agent_name="agent-py")
@@ -281,13 +273,15 @@ async def my_agent(ctx: JobContext):
         tts=inference.TTS(
             model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
         ),
-        # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
-        # See more at https://docs.livekit.io/agents/build/turns
-        turn_detection=MultilingualModel(),
-        vad=ctx.proc.userdata["vad"],
-        # allow the LLM to generate a response while waiting for the end of turn
-        # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
-        preemptive_generation=True,
+        turn_handling=TurnHandlingOptions(
+            # LiveKit's audio turn detector: predicts end of turn from the user's
+            # audio (semantics plus intonation and pacing). AgentSession supplies
+            # the VAD it needs automatically.
+            # See https://docs.livekit.io/agents/logic/turns/turn-detector/
+            turn_detection=inference.TurnDetector(),
+            # Let the LLM start generating a response while waiting for the end of turn
+            preemptive_generation={"enabled": True},
+        ),
     )
 
     # Start the session, which initializes the voice pipeline and warms up the models

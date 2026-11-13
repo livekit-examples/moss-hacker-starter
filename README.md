@@ -248,7 +248,7 @@ See [Agent deployment](https://docs.livekit.io/deploy/agents/quickstart/) and
 | `pnpm moss:index` | build the `knowledge` + `memory` Moss indexes |
 | `pnpm dev` | run agent + frontend together (via `concurrently`) |
 | `pnpm agent:py:console` | terminal smoke test (no frontend) |
-| `pnpm agent:py:start` / `pnpm agent:py:download-files` | prod entry / fetch model assets |
+| `pnpm agent:py:start` / `pnpm agent:py:download-files` | prod entry / fetch plugin model files |
 | `pnpm build` / `pnpm start:frontend` | build / serve the frontend |
 | `pnpm test` / `pnpm lint` / `pnpm format` | tests, lint, format |
 

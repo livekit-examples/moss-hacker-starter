@@ -85,7 +85,8 @@ def stub_moss(monkeypatch):
     monkeypatch.setattr(agent_module, "MossClient", _FakeMossClient)
     for name in ("LIVEKIT_URL", "LIVEKIT_API_KEY", "LIVEKIT_API_SECRET"):
         if not os.getenv(name):
-            monkeypatch.setenv(name, "placeholder")
+            # 32+ bytes so PyJWT doesn't warn about a short HMAC key.
+            monkeypatch.setenv(name, "placeholder-" * 3)
 
 
 async def test_search_knowledge_returns_joined_text_and_publishes_context(
