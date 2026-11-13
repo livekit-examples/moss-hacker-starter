@@ -12,7 +12,7 @@ The starter project includes:
 - A voice AI pipeline built on [LiveKit Inference](https://docs.livekit.io/agents/models/inference)
   with [models](https://docs.livekit.io/agents/models) from OpenAI, Cartesia, and Deepgram. More than 50 other model providers are supported, including [Realtime models](https://docs.livekit.io/agents/models/realtime)
 - Eval suite based on the LiveKit Agents [testing & evaluation framework](https://docs.livekit.io/agents/start/testing/)
-- [LiveKit Turn Detector](https://docs.livekit.io/agents/logic/turns/turn-detector/) for contextually-aware speaker detection, with multilingual support
+- LiveKit [audio turn detector](https://docs.livekit.io/agents/logic/turns/turn-detector/) for end-of-turn detection from the user's audio (built into the SDK; `AgentSession` supplies its VAD)
 - [Background voice cancellation](https://docs.livekit.io/transport/media/noise-cancellation/)
 - Deep session insights from LiveKit [Agent Observability](https://docs.livekit.io/deploy/observability/)
 - A Dockerfile ready for [production deployment to LiveKit Cloud](https://docs.livekit.io/deploy/agents/)
@@ -92,10 +92,10 @@ lk app env -w -d .env.local
 
 ## Run the agent
 
-Before your first run, you must download certain models such as [Silero VAD](https://docs.livekit.io/agents/logic/turns/vad/) and the [LiveKit turn detector](https://docs.livekit.io/agents/logic/turns/turn-detector/):
+Before your first run, download the model files used by the installed plugins (e.g. ai-coustics noise cancellation). The audio turn detector's weights ship with `livekit-agents`, so there is nothing extra to fetch for it:
 
 ```console
-uv run python src/agent.py download-files
+uv run -m livekit.agents download-files
 ```
 
 Next, run this command to speak to your agent directly in your terminal:
