@@ -30,7 +30,7 @@
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@rive-app/react-webgl2": "^4.26.1",
     "@xyflow/react": "^12.10.0",
-    "ai": "^5.0.105",
+    "ai": "^7.0.0",
     "buffer-image-size": "^0.6.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
