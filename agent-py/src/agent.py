@@ -95,8 +95,10 @@ class Assistant(Agent):
         )
         self._room = room
         self._user_id = user_id
+        # MossClient requires str credentials; default to "" so a missing env
+        # var surfaces as a logged load failure instead of a crash.
         self._moss = MossClient(
-            os.getenv("MOSS_PROJECT_ID"), os.getenv("MOSS_PROJECT_KEY")
+            os.getenv("MOSS_PROJECT_ID", ""), os.getenv("MOSS_PROJECT_KEY", "")
         )
         self._indexes_loaded = False
 
