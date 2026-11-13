@@ -44,7 +44,7 @@ jobs:
       - name: Read Python version from the Dockerfile
         id: python
         run: echo "version=$(sed -n 's/^ARG PYTHON_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: ${{ steps.python.outputs.version }}
       - run: uv sync --locked
