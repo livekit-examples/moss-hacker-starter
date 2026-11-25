@@ -14,7 +14,7 @@ dependencies = [
     "python-dotenv",
     # moss>=1.17 (inferedge-moss-core>=0.31) ships manylinux_2_28 wheels; older
     # releases need glibc 2.38+ and fail on Debian 12 / Ubuntu 22.04.
-    "moss>=1.25",
+    "moss>=1.26",
 ]
 
 [dependency-groups]
