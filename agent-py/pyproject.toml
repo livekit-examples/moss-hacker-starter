@@ -9,7 +9,7 @@ description = "Simple voice AI assistant built with LiveKit Agents for Python"
 requires-python = ">=3.11, <3.16"
 
 dependencies = [
-    "livekit-agents~=1.8",
+    "livekit-agents~=1.9",
     "livekit-plugins-ai-coustics~=0.3",
     "python-dotenv",
     # moss>=1.17 (inferedge-moss-core>=0.31) ships manylinux_2_28 wheels; older
